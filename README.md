@@ -1,106 +1,384 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/vllm-project/vllm-ascend/main/docs/source/logos/vllm-ascend-logo-text-dark.png">
-    <img alt="vllm-ascend" src="https://raw.githubusercontent.com/vllm-project/vllm-ascend/main/docs/source/logos/vllm-ascend-logo-text-light.png" width=55%>
-  </picture>
-</p>
+<!-- markdownlint-disable MD001 MD041 -->
+<h1 align="center">
+Kimi-K2.5 模型基于vLLM-Ascend 推理指导
+</h1>
 
-<h3 align="center">
-vLLM Ascend Plugin
-</h3>
+## 一、准备运行环境
 
-<div align="center">
+**表 1**  版本配套表
 
-[![DeepWiki](https://img.shields.io/badge/DeepWiki-Ask_AI-_.svg?style=flat&color=0052D9&labelColor=000000&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAyCAYAAAAnWDnqAAAAAXNSR0IArs4c6QAAA05JREFUaEPtmUtyEzEQhtWTQyQLHNak2AB7ZnyXZMEjXMGeK/AIi+QuHrMnbChYY7MIh8g01fJoopFb0uhhEqqcbWTp06/uv1saEDv4O3n3dV60RfP947Mm9/SQc0ICFQgzfc4CYZoTPAswgSJCCUJUnAAoRHOAUOcATwbmVLWdGoH//PB8mnKqScAhsD0kYP3j/Yt5LPQe2KvcXmGvRHcDnpxfL2zOYJ1mFwrryWTz0advv1Ut4CJgf5uhDuDj5eUcAUoahrdY/56ebRWeraTjMt/00Sh3UDtjgHtQNHwcRGOC98BJEAEymycmYcWwOprTgcB6VZ5JK5TAJ+fXGLBm3FDAmn6oPPjR4rKCAoJCal2eAiQp2x0vxTPB3ALO2CRkwmDy5WohzBDwSEFKRwPbknEggCPB/imwrycgxX2NzoMCHhPkDwqYMr9tRcP5qNrMZHkVnOjRMWwLCcr8ohBVb1OMjxLwGCvjTikrsBOiA6fNyCrm8V1rP93iVPpwaE+gO0SsWmPiXB+jikdf6SizrT5qKasx5j8ABbHpFTx+vFXp9EnYQmLx02h1QTTrl6eDqxLnGjporxl3NL3agEvXdT0WmEost648sQOYAeJS9Q7bfUVoMGnjo4AZdUMQku50McDcMWcBPvr0SzbTAFDfvJqwLzgxwATnCgnp4wDl6Aa+Ax283gghmj+vj7feE2KBBRMW3FzOpLOADl0Isb5587h/U4gGvkt5v60Z1VLG8BhYjbzRwyQZemwAd6cCR5/XFWLYZRIMpX39AR0tjaGGiGzLVyhse5C9RKC6ai42ppWPKiBagOvaYk8lO7DajerabOZP46Lby5wKjw1HCRx7p9sVMOWGzb/vA1hwiWc6jm3MvQDTogQkiqIhJV0nBQBTU+3okKCFDy9WwferkHjtxib7t3xIUQtHxnIwtx4mpg26/HfwVNVDb4oI9RHmx5WGelRVlrtiw43zboCLaxv46AZeB3IlTkwouebTr1y2NjSpHz68WNFjHvupy3q8TFn3Hos2IAk4Ju5dCo8B3wP7VPr/FGaKiG+T+v+TQqIrOqMTL1VdWV1DdmcbO8KXBz6esmYWYKPwDL5b5FA1a0hwapHiom0r/cKaoqr+27/XcrS5UwSMbQAAAABJRU5ErkJggg==)](https://deepwiki.com/vllm-project/vllm-ascend)
+| 配套  | 版本 | 环境准备指导 |
+| ----- | ----- |-----|
+| Python | 3.11.10 | - |
+| torch | 2.9.0 | - |
+| transformers | 4.57.6 | - |
 
-</div>
+### 1.1 获取vllm-ascend镜像
 
-<p align="center">
-| <a href="https://www.hiascend.com/en/"><b>About Ascend</b></a> | <a href="https://docs.vllm.ai/projects/ascend/en/latest/"><b>Documentation</b></a> | <a href="https://slack.vllm.ai"><b>#SIG-Ascend</b></a> | <a href="https://discuss.vllm.ai/c/hardware-support/vllm-ascend-support"><b>Users Forum</b></a> | <a href="https://tinyurl.com/vllm-ascend-meeting"><b>Weekly Meeting</b></a> |
-</p>
+- [镜像链接](https://quay.io/repository/ascend/vllm-ascend?tab=tags)：https://quay.io/repository/ascend/vllm-ascend?tab=tags
+- 下载镜像命令
+```shell
+docker pull quay.io/ascend/vllm-ascend:v0.14.0rc1
+```
 
-<p align="center">
-<a ><b>English</b></a> | <a href="README.zh.md"><b>中文</b></a>
-</p>
+### 1.2 特性分支
 
----
-*Latest News* 🔥
+- vllm：https://github.com/LoganJane/vllm/tree/main
+- vllm-ascend：https://github.com/LoganJane/vllm-ascend/tree/main
 
-- [2025/12] We released the new official version [v0.11.0](https://github.com/vllm-project/vllm-ascend/releases/tag/v0.11.0)! Please follow the [official guide](https://docs.vllm.ai/projects/ascend/en/v0.11.0/) to start using vLLM Ascend Plugin on Ascend.
-- [2025/09] We released the new official version [v0.9.1](https://github.com/vllm-project/vllm-ascend/releases/tag/v0.9.1)! Please follow the [official guide](https://docs.vllm.ai/projects/ascend/en/v0.9.1/tutorials/large_scale_ep.html) to start deploying large-scale Expert Parallelism (EP) on Ascend.
-- [2025/08] We hosted the [vLLM Beijing Meetup](https://mp.weixin.qq.com/s/7n8OYNrCC_I9SJaybHA_-Q) with vLLM and Tencent! Please find the meetup slides [here](https://drive.google.com/drive/folders/1Pid6NSFLU43DZRi0EaTcPgXsAzDvbBqF).
-- [2025/06] [User stories](https://docs.vllm.ai/projects/ascend/en/latest/community/user_stories/index.html) page is now live! It kicks off with LLaMA-Factory/verl/TRL/GPUStack to demonstrate how vLLM Ascend‌ assists Ascend users in enhancing their experience across fine-tuning, evaluation, reinforcement learning (RL), and deployment scenarios.
-- [2025/06] [Contributors](https://docs.vllm.ai/projects/ascend/en/latest/community/contributors.html) page is now live! All contributions deserve to be recorded, thanks for all contributors.
-- [2025/05] We've released the first official version [v0.7.3](https://github.com/vllm-project/vllm-ascend/releases/tag/v0.7.3)! We collaborated with the vLLM community to publish a blog post sharing our practice: [Introducing vLLM Hardware Plugin, Best Practice from Ascend NPU](https://blog.vllm.ai/2025/05/12/hardware-plugin.html).
-- [2025/03] We hosted the [vLLM Beijing Meetup](https://mp.weixin.qq.com/s/VtxO9WXa5fC-mKqlxNUJUQ) with vLLM team! Please find the meetup slides [here](https://drive.google.com/drive/folders/1Pid6NSFLU43DZRi0EaTcPgXsAzDvbBqF).
-- [2025/02] vLLM community officially created [vllm-project/vllm-ascend](https://github.com/vllm-project/vllm-ascend) repo for running vLLM seamlessly on the Ascend NPU.
-- [2024/12] We are working with the vLLM community to support [[RFC]: Hardware pluggable](https://github.com/vllm-project/vllm/issues/11162).
+### 1.3 社区适配PR
 
----
+- vllm：https://github.com/vllm-project/vllm/pull/34501
+- vllm-ascend：https://github.com/vllm-project/vllm-ascend/pull/6755
 
-## Overview
+### 1.4 安装 vllm & vllm-ascend
 
-vLLM Ascend (`vllm-ascend`) is a community maintained hardware plugin for running vLLM seamlessly on the Ascend NPU.
+```shell
+# 卸载镜像中vllm/vllm-ascend
+pip uninstall -y vllm vllm_ascend
+```
 
-It is the recommended approach for supporting the Ascend backend within the vLLM community. It adheres to the principles outlined in the [[RFC]: Hardware pluggable](https://github.com/vllm-project/vllm/issues/11162), providing a hardware-pluggable interface that decouples the integration of the Ascend NPU with vLLM.
+```shell
+# 安装vllm
+git clone https://github.com/LoganJane/vllm.git
+cd vllm
+VLLM_TARGET_DEVICE=empty pip install -v -e .
+```
 
-By using vLLM Ascend plugin, popular open-source models, including Transformer-like, Mixture-of-Experts (MoE), Embedding, Multi-modal LLMs can run seamlessly on the Ascend NPU.
+```shell
+# 设置环境变量
+source /usr/local/Ascend/ascend-toolkit/set_env.sh
+source /usr/local/Ascend/nnal/atb/set_env.sh
+# 安装vllm-ascend
+git clone https://github.com/LoganJane/vllm-ascend.git
+cd vllm-ascend
+pip install -v -e .
+```
 
-## Prerequisites
+## 二、下载权重
 
-- Hardware: Atlas 800I A2 Inference series, Atlas A2 Training series, Atlas 800I A3 Inference series, Atlas A3 Training series, Atlas 300I Duo (Experimental)
-- OS: Linux
-- Software:
-    - Python >= 3.10, < 3.12
-    - CANN == 8.5.0 (Ascend HDK version refers to [here](https://www.hiascend.com/document/detail/zh/canncommercial/83RC2/releasenote/releasenote_0000.html))
-    - PyTorch == 2.9.0, torch-npu == 2.9.0
-    - vLLM (the same version as vllm-ascend)
+### 2.1 vLLM-Ascend w4a8权重
 
-## Getting Started
+- ModelScope
 
-Please use the following recommended versions to get started quickly:
+|  模型 | 链接  |
+| ------------ | ------------ |
+| Eco-Tech/Kimi-K2.5-W4A8  |  [ModelScope](https://modelscope.cn/models/Eco-Tech/Kimi-K2.5-W4A8/files) |
 
-| Version    | Release type | Doc                                  |
-|------------|--------------|--------------------------------------|
-| v0.14.0rc1 | Latest release candidate | See [QuickStart](https://docs.vllm.ai/projects/ascend/en/latest/quick_start.html) and [Installation](https://docs.vllm.ai/projects/ascend/en/latest/installation.html) for more details |
-| v0.13.0rc2 | Latest stable release candidate | See [QuickStart](https://docs.vllm.ai/projects/ascend/en/v0.13.0/quick_start.html) and [Installation](https://docs.vllm.ai/projects/ascend/en/v0.13.0/installation.html) for more details |
-| v0.11.0 | Latest stable version | See [QuickStart](https://docs.vllm.ai/projects/ascend/en/v0.11.0/quick_start.html) and [Installation](https://docs.vllm.ai/projects/ascend/en/v0.11.0/installation.html) for more details |
+### 2.2 Kimi-K2.5 官方权重
 
-## Contributing
+- Huggingface
 
-See [CONTRIBUTING](https://docs.vllm.ai/projects/ascend/en/latest/developer_guide/contribution/index.html) for more details, which is a step-by-step guide to help you set up the development environment, build and test.
+|  模型 | 链接  |
+| ------------ | ------------ |
+| moonshotai/Kimi-K2.5  |  [🤗huggingface](https://huggingface.co/moonshotai/Kimi-K2.5/tree/main) |
 
-We welcome and value any contributions and collaborations:
+- ModelScope
 
-- Please let us know if you encounter a bug by [filing an issue](https://github.com/vllm-project/vllm-ascend/issues)
-- Please use [User forum](https://discuss.vllm.ai/c/hardware-support/vllm-ascend-support) for usage questions and help.
+|  模型 | 链接  |
+| ------------ | ------------ |
+| moonshotai/Kimi-K2.5  |  [ModelScope](https://modelscope.cn/models/moonshotai/Kimi-K2.5/files) |
 
-## Branch
+## 三、Atlas 800I A3 单机混部部署
 
-vllm-ascend has a main branch and a dev branch.
+### 3.1 w4a8量化权重启动命令
 
-- **main**: main branch, corresponds to the vLLM main branch, and is continuously monitored for quality through Ascend CI.
-- **releases/vX.Y.Z**: development branch, created alongside new releases of vLLM. For example, `releases/v0.13.0` is the dev branch for vLLM `v0.13.0` version.
+```shell
+#!/bin/sh
+export OMP_PROC_BIND=false
+export OMP_NUM_THREADS=1
+export PYTORCH_NPU_ALLOC_CONF="expandable_segments:True"
+export VLLM_USE_V1=1
+export TASK_QUEUE_ENABLE=1
+export VLLM_TORCH_PROFILER_WITH_STACK=0
 
-Below are the maintained branches:
+export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libjemalloc.so.2:$LD_PRELOAD
+echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+sysctl -w vm.swappiness=0
+sysctl -w kernel.numa_balancing=0
+sysctl -w kernel.sched_migration_cost_ns=50000
 
-| Branch     | Status       | Note                                 |
-|------------|--------------|--------------------------------------|
-| main       | Maintained   | CI commitment for vLLM main branch and vLLM v0.13.0 tag   |
-| v0.7.1-dev | Unmaintained | Only doc fixes are allowed |
-| v0.7.3-dev | Maintained   | CI commitment for vLLM 0.7.3 version, only bug fixes are allowed, and no new release tags anymore. |
-| v0.9.1-dev | Maintained   | CI commitment for vLLM 0.9.1 version |
-| v0.11.0-dev | Maintained | CI commitment for vLLM 0.11.0 version |
-| releases/v0.13.0 | Maintained | CI commitment for vLLM 0.13.0 version |
-| rfc/feature-name | Maintained | [Feature branches](https://docs.vllm.ai/projects/ascend/en/latest/community/versioning_policy.html#feature-branches) for collaboration |
+export VLLM_ASCEND_BALANCE_SCHEDULING=1
+export HCCL_BUFFSIZE=1536
+export VLLM_ASCEND_ENABLE_FUSED_MC2=1
 
-Please refer to [Versioning policy](https://docs.vllm.ai/projects/ascend/en/latest/community/versioning_policy.html) for more details.
+vllm serve /weights/Kimi-K2.5-W4A8 \
+    --served-model-name kimi \
+    --tool-call-parser kimi_k2 \
+    --reasoning-parser kimi_k2 \
+    --quantization ascend \
+    --trust-remote-code \
+    --tensor-parallel-size 8 \
+    --data-parallel-size 2 \
+    --enable-expert-parallel \
+    --port 8008 \
+    --max-num-seqs 256 \
+    --max-model-len 32768 \
+    --max-num-batched-tokens 12288 \
+    --no-enable-prefix-caching \
+    --gpu-memory-utilization 0.9 \
+    --allowed-local-media-path / \
+    --seed 42 \
+    --async-scheduling \
+    --mm-processor-cache-type shm \
+    --mm-encoder-tp-mode data \
+    --compilation-config '{"cudagraph_capture_sizes":[256,192,160,128,96,64,32,16,8,4,2,1], "cudagraph_mode":"FULL_DECODE_ONLY"}' \
+    --additional-config '{"ascend_scheduler_config":{"enabled":false},"torchair_graph_config":{"enabled":false}}'
+```
 
-## Weekly Meeting
+### 3.2 官方原始权重启动命令
 
-- vLLM Ascend Weekly Meeting: <https://tinyurl.com/vllm-ascend-meeting>
-- Wednesday, 15:00 - 16:00 (UTC+8, [Convert to your timezone](https://dateful.com/convert/gmt8?t=15))
+```shell
+#!/bin/sh
+export OMP_PROC_BIND=false
+export OMP_NUM_THREADS=1
+export PYTORCH_NPU_ALLOC_CONF="expandable_segments:True"
+export VLLM_USE_V1=1
+export TASK_QUEUE_ENABLE=1
+export VLLM_TORCH_PROFILER_WITH_STACK=0
 
-## License
+export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libjemalloc.so.2:$LD_PRELOAD
+echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+sysctl -w vm.swappiness=0
+sysctl -w kernel.numa_balancing=0
+sysctl -w kernel.sched_migration_cost_ns=50000
 
-Apache License 2.0, as found in the [LICENSE](./LICENSE) file.
+export VLLM_ASCEND_BALANCE_SCHEDULING=1
+
+vllm serve /weights/Kimi-K2.5 \
+    --served-model-name kimi \
+    --tool-call-parser kimi_k2 \
+    --reasoning-parser kimi_k2 \
+    --trust-remote-code \
+    --tensor-parallel-size 8 \
+    --data-parallel-size 2 \
+    --enable-expert-parallel \
+    --port 8008 \
+    --max-num-seqs 256 \
+    --max-model-len 32768 \
+    --max-num-batched-tokens 12288 \
+    --no-enable-prefix-caching \
+    --gpu-memory-utilization 0.9 \
+    --allowed-local-media-path / \
+    --seed 42 \
+    --async-scheduling \
+    --mm-processor-cache-type shm \
+    --mm-encoder-tp-mode data \
+    --compilation-config '{"cudagraph_capture_sizes":[256,192,160,128,96,64,32,16,8,4,2,1], "cudagraph_mode":"FULL_DECODE_ONLY"}' \
+    --additional-config '{"ascend_scheduler_config":{"enabled":false},"torchair_graph_config":{"enabled":false}}'
+```
+
+### 3.3 发送多模态请求执行推理
+
+```shell
+curl http://localhost:8008/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "kimi",
+        "messages": [{
+            "role": "user",
+            "content": [
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": "file:///datasets/test.jpg",
+                    "detail": "high"
+                }
+            },
+            {
+                "type": "text",
+                "text": "请描述图片中的内容。"
+            }]
+        }],
+        "max_tokens": 1024
+    }'
+```
+
+## 四、Atlas 800I A3 双机PD分离部署
+
+### 4.1 PD proxy
+
+```shell
+python vllm-ascend/examples/disaggregated_prefill_v1/load_balance_proxy_server_example.py \
+    --host 0.0.0.0 \
+    --port 8008 \
+    --prefiller-hosts 102.34.56.78 \
+    --prefiller-port 1025 \
+    --decoder-hosts 102.34.56.79 \
+    --decoder-ports 1026
+```
+
+### 4.2 Prefill node 0
+
+```shell
+nic_name="enp48s3u1u1"
+local_ip="102.34.56.78"
+
+export HCCL_IF_IP=$local_ip
+export GLOO_SOCKET_IFNAME=$nic_name
+export TP_SOCKET_IFNAME=$nic_name
+export HCCL_SOCKET_IFNAME=$nic_name
+
+export OMP_PROC_BIND=false
+export OMP_NUM_THREADS=10
+export PYTORCH_NPU_ALLOC_CONF="expandable_segments:True"
+export VLLM_USE_V1=1
+export TASK_QUEUE_ENABLE=1
+export VLLM_TORCH_PROFILER_WITH_STACK=0
+export VLLM_RPC_TIMEOUT=3600000
+export VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=3600000
+
+export VLLM_WORKER_MULTIPROC_METHOD="fork"
+export ASCEND_BUFFER_POOL=4:8
+export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/python/site-packages/mooncake:$LD_LIBRARY_PATH
+export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libjemalloc.so.2:$LD_PRELOAD
+echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+sysctl -w vm.swappiness=0
+sysctl -w kernel.numa_balancing=0
+sysctl -w kernel.sched_migration_cost_ns=50000
+
+export VLLM_ASCEND_ENABLE_MLAPO=1
+export HCCL_BUFFSIZE=800
+export VLLM_ASCEND_ENABLE_FUSED_MC2=1
+
+vllm serve /weights/Kimi-K2.5-W4A8 \
+    --host 0.0.0.0 \
+    --port 1025 \
+    --quantization ascend \
+    --served-model-name kimi \
+    --tool-call-parser kimi_k2 \
+    --reasoning-parser kimi_k2 \
+    --trust-remote-code \
+    --tensor-parallel-size 8 \
+    --data-parallel-size 2 \
+    --enable-expert-parallel \
+    --max-num-seqs 8 \
+    --max-model-len 16384 \
+    --max-num-batched-tokens 8192 \
+    --no-enable-prefix-caching \
+    --gpu-memory-utilization 0.9 \
+    --allowed-local-media-path / \
+    --seed 42 \
+    --async-scheduling \
+    --mm-processor-cache-type shm \
+    --mm-encoder-tp-mode data \
+    --additional-config '{"ascend_scheduler_config":{"enabled":false},"torchair_graph_config":{"enabled":false}}' \
+    --kv-transfer-config \
+    '{"kv_connector": "MooncakeConnectorV1",
+    "kv_role": "kv_producer",
+    "kv_port": "30100",
+    "engine_id": "0",
+    "kv_connector_module_path": "vllm_ascend.distributed.mooncake_connector",
+    "kv_connector_extra_config": {
+                "prefill": {
+                        "dp_size": 2,
+                        "tp_size": 8
+                },
+                "decode": {
+                        "dp_size": 4,
+                        "tp_size": 4
+                }
+        }
+    }'
+```
+
+### 4.3 Decode node 0
+
+```shell
+nic_name="enp48s3u1u1"
+local_ip="102.34.56.79"
+
+export HCCL_IF_IP=$local_ip
+export GLOO_SOCKET_IFNAME=$nic_name
+export TP_SOCKET_IFNAME=$nic_name
+export HCCL_SOCKET_IFNAME=$nic_name
+
+export OMP_PROC_BIND=false
+export OMP_NUM_THREADS=10
+export PYTORCH_NPU_ALLOC_CONF="expandable_segments:True"
+export VLLM_USE_V1=1
+export TASK_QUEUE_ENABLE=1
+export VLLM_TORCH_PROFILER_WITH_STACK=0
+export VLLM_RPC_TIMEOUT=3600000
+export VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=3600000
+
+export VLLM_WORKER_MULTIPROC_METHOD="fork"
+export ASCEND_BUFFER_POOL=4:8
+export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/python/site-packages/mooncake:$LD_LIBRARY_PATH
+export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libjemalloc.so.2:$LD_PRELOAD
+echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+sysctl -w vm.swappiness=0
+sysctl -w kernel.numa_balancing=0
+sysctl -w kernel.sched_migration_cost_ns=50000
+
+export VLLM_ASCEND_ENABLE_MLAPO=1
+export HCCL_BUFFSIZE=1024
+export VLLM_ASCEND_ENABLE_FUSED_MC2=1
+
+vllm serve /weights/Kimi-K2.5-W4A8 \
+    --host 0.0.0.0 \
+    --port 1026 \
+    --quantization ascend \
+    --served-model-name kimi \
+    --tool-call-parser kimi_k2 \
+    --reasoning-parser kimi_k2 \
+    --trust-remote-code \
+    --tensor-parallel-size 4 \
+    --data-parallel-size 4 \
+    --enable-expert-parallel \
+    --max-num-seqs 32 \
+    --max-model-len 32768 \
+    --max-num-batched-tokens 128 \
+    --no-enable-prefix-caching \
+    --gpu-memory-utilization 0.9 \
+    --allowed-local-media-path / \
+    --seed 42 \
+    --async-scheduling \
+    --mm-processor-cache-type shm \
+    --mm-encoder-tp-mode data \
+    --compilation-config '{"cudagraph_capture_sizes":[1,2,4,8,16,32,64,96,128], "cudagraph_mode":"FULL_DECODE_ONLY"}' \
+    --additional-config '{"ascend_scheduler_config":{"enabled":false},"torchair_graph_config":{"enabled":false}}' \
+    --kv-transfer-config \
+    '{"kv_connector": "MooncakeConnectorV1",
+    "kv_role": "kv_consumer",
+    "kv_port": "30200",
+    "engine_id": "1",
+    "kv_connector_module_path": "vllm_ascend.distributed.mooncake_connector",
+    "kv_connector_extra_config": {
+                "prefill": {
+                        "dp_size": 2,
+                        "tp_size": 8
+                },
+                "decode": {
+                        "dp_size": 4,
+                        "tp_size": 4
+                }
+        }
+    }'
+```
+
+### 4.4 发送多模态请求执行推理
+
+```shell
+curl http://localhost:8008/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "kimi",
+        "messages": [{
+            "role": "user",
+            "content": [
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": "file:///datasets/test.jpg",
+                    "detail": "high"
+                }
+            },
+            {
+                "type": "text",
+                "text": "请描述图片中的内容。"
+            }]
+        }],
+        "max_tokens": 1024
+    }'
+```
