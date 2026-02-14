@@ -18,7 +18,12 @@ Kimi-K2.5 模型基于vLLM-Ascend 推理指导
 - [镜像链接](https://quay.io/repository/ascend/vllm-ascend?tab=tags)：https://quay.io/repository/ascend/vllm-ascend?tab=tags
 - 下载镜像命令
 ```shell
+# A2 镜像下载
 docker pull quay.io/ascend/vllm-ascend:v0.14.0rc1
+```
+```shell
+# A3 镜像下载
+docker pull quay.io/ascend/vllm-ascend:v0.14.0rc1-a3
 ```
 
 ### 1.2 特性分支
@@ -358,6 +363,161 @@ vllm serve /weights/Kimi-K2.5-W4A8 \
 ```
 
 ### 4.4 发送多模态请求执行推理
+
+```shell
+curl http://localhost:8008/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "kimi",
+        "messages": [{
+            "role": "user",
+            "content": [
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": "file:///datasets/test.jpg",
+                    "detail": "high"
+                }
+            },
+            {
+                "type": "text",
+                "text": "请描述图片中的内容。"
+            }]
+        }],
+        "max_tokens": 1024
+    }'
+```
+
+## 五、Atlas 800I A2 双机混部部署
+
+### 5.1 Node 0 （主节点）
+- 【注意】HCCL_IF_IP为本机业务IP，GLOO_SOCKET_IFNAME为网卡名字，都可通过ifconfig获取
+
+```shell
+nic_name="enp67s0f0np0"
+local_ip="102.34.56.78"
+
+export HCCL_IF_IP=$local_ip
+export GLOO_SOCKET_IFNAME=$nic_name
+export TP_SOCKET_IFNAME=$nic_name
+export HCCL_SOCKET_IFNAME=$nic_name
+export HCCL_INTRA_PCIE_ENABLE=1
+export HCCL_INTRA_ROCE_ENABLE=0
+
+export OMP_PROC_BIND=false
+export OMP_NUM_THREADS=1
+export ASCEND_RT_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+export PYTORCH_NPU_ALLOC_CONF="expandable_segments:True"
+export VLLM_USE_V1=1
+export TASK_QUEUE_ENABLE=1
+export VLLM_TORCH_PROFILER_WITH_STACK=0
+
+export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libjemalloc.so.2:$LD_PRELOAD
+echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+sysctl -w vm.swappiness=0
+sysctl -w kernel.numa_balancing=0
+sysctl -w kernel.sched_migration_cost_ns=50000
+
+export VLLM_ASCEND_ENABLE_MLAPO=1
+export HCCL_BUFFSIZE=1536
+export VLLM_ASCEND_ENABLE_FUSED_MC2=1
+
+vllm serve /weights/Kimi-K2.5-W4A8 \
+    --host 0.0.0.0 \
+    --port 8008 \
+    --quantization ascend \
+    --served-model-name kimi \
+    --tool-call-parser kimi_k2 \
+    --reasoning-parser kimi_k2 \
+    --trust-remote-code \
+    --tensor-parallel-size 8 \
+    --data-parallel-size 2 \
+    --data-parallel-size-local 1 \
+    --data-parallel-start-rank 0 \
+    --data-parallel-address 102.34.56.78 \
+    --data-parallel-rpc-port 2357 \
+    --enable-expert-parallel \
+    --max-num-seqs 128 \
+    --max-model-len 32768 \
+    --max-num-batched-tokens 8192 \
+    --no-enable-prefix-caching \
+    --gpu-memory-utilization 0.9 \
+    --allowed-local-media-path / \
+    --seed 42 \
+    --async-scheduling \
+    --mm-processor-cache-type shm \
+    --mm-encoder-tp-mode data \
+    --compilation-config '{"cudagraph_capture_sizes":[1,2,4,8,16,32,64,96,128], "cudagraph_mode":"FULL_DECODE_ONLY"}' \
+    --additional-config '{"ascend_scheduler_config":{"enabled":false},"torchair_graph_config":{"enabled":false}}'
+```
+
+### 5.2 Node 1
+- 【注意】
+  1、data-parallel-start-rank：Node 0 设置为0，Node 1 设置为1
+  2、data-parallel-address：在 Node 1 上，该参数需要设置为 Node 0（主节点）的地址
+  3、--headless：该参数只需要在 Node 1 上设置
+  4、--port：每个节点的port需保持一致
+
+```shell
+nic_name="enp67s0f0np0"
+local_ip="102.34.56.79"
+
+export HCCL_IF_IP=$local_ip
+export GLOO_SOCKET_IFNAME=$nic_name
+export TP_SOCKET_IFNAME=$nic_name
+export HCCL_SOCKET_IFNAME=$nic_name
+export HCCL_INTRA_PCIE_ENABLE=1
+export HCCL_INTRA_ROCE_ENABLE=0
+
+export OMP_PROC_BIND=false
+export OMP_NUM_THREADS=1
+export ASCEND_RT_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+export PYTORCH_NPU_ALLOC_CONF="expandable_segments:True"
+export VLLM_USE_V1=1
+export TASK_QUEUE_ENABLE=1
+export VLLM_TORCH_PROFILER_WITH_STACK=0
+
+export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libjemalloc.so.2:$LD_PRELOAD
+echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+sysctl -w vm.swappiness=0
+sysctl -w kernel.numa_balancing=0
+sysctl -w kernel.sched_migration_cost_ns=50000
+
+export VLLM_ASCEND_ENABLE_MLAPO=1
+export HCCL_BUFFSIZE=1536
+export VLLM_ASCEND_ENABLE_FUSED_MC2=1
+
+vllm serve /weights/Kimi-K2.5-W4A8 \
+    --host 0.0.0.0 \
+    --port 8008 \
+    --headless \
+    --quantization ascend \
+    --served-model-name kimi \
+    --tool-call-parser kimi_k2 \
+    --reasoning-parser kimi_k2 \
+    --trust-remote-code \
+    --tensor-parallel-size 8 \
+    --data-parallel-size 2 \
+    --data-parallel-size-local 1 \
+    --data-parallel-start-rank 1 \
+    --data-parallel-address 102.34.56.78 \
+    --data-parallel-rpc-port 2357 \
+    --enable-expert-parallel \
+    --max-num-seqs 128 \
+    --max-model-len 32768 \
+    --max-num-batched-tokens 8192 \
+    --no-enable-prefix-caching \
+    --gpu-memory-utilization 0.9 \
+    --allowed-local-media-path / \
+    --seed 42 \
+    --async-scheduling \
+    --mm-processor-cache-type shm \
+    --mm-encoder-tp-mode data \
+    --compilation-config '{"cudagraph_capture_sizes":[1,2,4,8,16,32,64,96,128], "cudagraph_mode":"FULL_DECODE_ONLY"}' \
+    --additional-config '{"ascend_scheduler_config":{"enabled":false},"torchair_graph_config":{"enabled":false}}'
+```
+
+### 5.3 发送多模态请求执行推理
 
 ```shell
 curl http://localhost:8008/v1/chat/completions \
