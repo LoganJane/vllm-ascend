@@ -453,10 +453,10 @@ vllm serve /weights/Kimi-K2.5-W4A8 \
 
 ### 5.2 Node 1
 - 【注意】
-  1、data-parallel-start-rank：Node 0 设置为0，Node 1 设置为1
-  2、data-parallel-address：在 Node 1 上，该参数需要设置为 Node 0（主节点）的地址
-  3、--headless：该参数只需要在 Node 1 上设置
-  4、--port：每个节点的port需保持一致
+- 1、data-parallel-start-rank：Node 0 设置为0，Node 1 设置为1
+- 2、data-parallel-address：在 Node 1 上，该参数需要设置为 Node 0（主节点）的地址
+- 3、--headless：该参数只需要在 Node 1 上设置
+- 4、--port：每个节点的port需保持一致
 
 ```shell
 nic_name="enp67s0f0np0"
