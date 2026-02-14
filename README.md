@@ -40,7 +40,7 @@ pip uninstall -y vllm vllm_ascend
 
 ```shell
 # 安装vllm
-git clone https://github.com/LoganJane/vllm.git
+git clone -b main https://github.com/LoganJane/vllm.git
 cd vllm
 VLLM_TARGET_DEVICE=empty pip install -v -e .
 ```
@@ -50,7 +50,7 @@ VLLM_TARGET_DEVICE=empty pip install -v -e .
 source /usr/local/Ascend/ascend-toolkit/set_env.sh
 source /usr/local/Ascend/nnal/atb/set_env.sh
 # 安装vllm-ascend
-git clone https://github.com/LoganJane/vllm-ascend.git
+git clone -b main https://github.com/LoganJane/vllm-ascend.git
 cd vllm-ascend
 pip install -v -e .
 ```
