@@ -138,9 +138,9 @@ curl --location "localhost:8000/v1/chat/completions" \
 After the server starts, you can query the model with image-containing
 prompts.
 ## **7. Performance Evaluation**
-Using AISBench Refer to the 
-[AISBench]: https://gitee.com/aisbench/benchmark/tree/master  
-performance evaluation documentation.
+Using AISBench Refer to the performance evaluation documentation.
+Reference Link:
+[AISBench]: https://github.com/AISBench/benchmark
 ## **8. Summary**
 
 This document provides a complete deployment and validation guide for the Phi-4-multimodal model on the Ascend platform, covering all key steps from environment preparation to performance evaluation. By following the guidance in this document, developers can efficiently deploy and optimize multimodal model inference services.
